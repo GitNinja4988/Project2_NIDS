@@ -9,7 +9,7 @@
 
 ## 1. Research Question and Scope
 
-Published machine-learning intrusion detectors frequently report detection rates above 99% on CIC-IDS2017. These figures are usually obtained on a random train/test split, in which training and test flows are drawn from the same days and the same attack campaigns. This project quantifies how much measured performance declines when the evaluation more closely resembles deployment: testing on a later day that contains attack types absent from training (CIC-IDS2017), and testing on the authors' official held-out file (UNSW-NB15). The task is binary flow classification (benign versus attack). The interim milestone covers data acquisition and cleaning, the evaluation splits, leakage safeguards, the metrics, a logistic regression baseline and two tree-ensemble comparison models.
+Published machine-learning intrusion detectors frequently report detection rates above 99% on CIC-IDS2017. These figures are usually obtained on a random train/test split, in which training and test flows are drawn from the same days and the same attack campaigns. This project quantifies how much measured performance declines when the evaluation more closely resembles deployment: testing on a later day that contains attack types absent from training (CIC-IDS2017), and testing on the authors' official held-out file (UNSW-NB15). The task is binary flow classification (benign versus attack). The interim milestone covers data acquisition and cleaning, the evaluation splits, leakage safeguards, the metrics, a logistic regression baseline and two tree-ensemble comparison models. This report describes only the work completed for the milestone; work planned for the final report is listed in Section 7 and has not yet been implemented.
 
 ## 2. Data
 
@@ -99,6 +99,8 @@ The interim target (data loaded, an initial pipeline working and a preliminary b
 | Redistribution terms for the bundled sample must be confirmed before the repository is made public. | Repository kept private; the instructor has been invited. | Open |
 
 ## 7. Plan for Completion
+
+The following tasks are planned for the final report and are not yet implemented in the repository.
 
 | Priority | Task | Owner |
 |---|---|---|
