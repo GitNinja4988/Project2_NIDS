@@ -1,20 +1,23 @@
-# How Much Does NIDS Evaluation Overestimate Performance? (Interim Update)
+# Generalization Gap in Machine-Learning Network Intrusion Detection: Interim Update
 
-EAS 510, Fall 2026, Project 2. Arya Pravin Joshi, Aditya More. Interim update, November 23, 2026.
+**Course:** EAS 510 Basics of AI, Fall 2026, Project 2  
+**Authors:** Arya Pravin Joshi and Aditya More, University at Buffalo  
+**Date:** November 23, 2026  
+**Repository:** <https://github.com/GitNinja4988/Project2_NIDS>
 
-This is the milestone version of the report. This is for the first half of the project. It will be replaced by the final report on December 7th.
+*Status: interim version. This document will be replaced by the final report on December 7, 2026.*
 
-## 1. Question
+## 1. Research Question and Scope
 
-Papers that present the results of their machine-learning intrusion detection often claim 99%+ detection on CIC-IDS2017, typically given on a random train/test split, with training and test flows being drawn from the same days of the dataset and the same attacks. We assess the score drop when the test is more similar to real use: a later day with attack types not seen by the model (CIC-IDS2017) or the official train/test files (UNSW-NB15). The task is a binary classification of the flow, benign or attack.
+Published machine-learning intrusion detectors frequently report detection rates above 99% on CIC-IDS2017. These figures are usually obtained on a random train/test split, in which training and test flows are drawn from the same days and the same attack campaigns. This project quantifies how much measured performance declines when the evaluation more closely resembles deployment: testing on a later day that contains attack types absent from training (CIC-IDS2017), and testing on the authors' official held-out file (UNSW-NB15). The task is binary flow classification (benign versus attack). The interim milestone covers data acquisition and cleaning, the evaluation splits, leakage safeguards, the metrics, a logistic regression baseline and two tree-ensemble comparison models.
 
 ## 2. Data
 
-CIC-IDS2017 comes from the Canadian Institute for Cybersecurity, University of New Brunswick (<https://www.unb.ca/cic/datasets/ids-2017.html>), file `MachineLearningCSV.zip` (MD5 `4f83860afbf29cac8163854095bf6cf7`). It was recorded Monday to Friday, 3 to 7 July 2017, with different attacks on different days. One row is one network flow with 78 flow features and a label (14 attack labels, grouped into 8 families).
+**Sources.** CIC-IDS2017 is published by the Canadian Institute for Cybersecurity, University of New Brunswick (<https://www.unb.ca/cic/datasets/ids-2017.html>); the project uses `MachineLearningCSV.zip` (MD5 `4f83860afbf29cac8163854095bf6cf7`). UNSW-NB15 is published by the UNSW Canberra Cyber Range Lab (<https://research.unsw.edu.au/projects/unsw-nb15-dataset>); the project uses `UNSW_NB15_training-set.csv` and `UNSW_NB15_testing-set.csv`. Both datasets are available for academic research with citation and were retrieved in November 2026. `data/download.py` downloads the files and verifies every MD5 checksum.
 
-UNSW-NB15 comes from the UNSW Canberra Cyber Range Lab (<https://research.unsw.edu.au/projects/unsw-nb15-dataset>), files `UNSW_NB15_training-set.csv` and `UNSW_NB15_testing-set.csv`. One row is one network connection record with 42 features and a label (9 attack categories). It has no timestamps.
+**Unit of observation, features and target.** In CIC-IDS2017 one observation is a bidirectional network flow described by 78 flow statistics, recorded Monday to Friday (3–7 July 2017) with different attacks on different days; it has 14 attack labels, grouped into 8 families. In UNSW-NB15 one observation is a connection record with 42 features and 9 attack categories, and no timestamps. The target is binary (benign = 0, attack = 1); the attack family is retained for per-family evaluation. IP addresses, flow identifiers, timestamps and port numbers are removed so that models cannot rely on host-identity shortcuts. After this step the models use 76 features on CIC-IDS2017 and 42 on UNSW-NB15.
 
-Both datasets are free for academic research with citation and were retrieved in November 2026. `data/download.py` downloads them and checks the MD5 of every file. `data/clean.py` cleans them:
+**Cleaning.** `data/clean.py` converts infinite values to missing values (imputed later with the training median), removes exact duplicate rows, and removes rows whose identical feature vectors carry conflicting labels.
 
 | Step | CIC-IDS2017 | UNSW-NB15 |
 |---|---:|---:|
@@ -24,93 +27,100 @@ Both datasets are free for academic research with citation and were retrieved in
 | Rows removed because identical features had different labels | 1,396 | 11,506 |
 | Clean rows | **2,520,966** | **151,239** |
 
-Missing values are filled with the training median. IP addresses, flow IDs, timestamps and ports are dropped so the models cannot learn identity shortcuts. The models use 76 features on CIC and 42 on UNSW.
+**Bundled sample.** `data/sample/` contains 40,000 CIC-IDS2017 flows and 10,000 UNSW-NB15 records, produced by `data/make_sample.py` with a fixed seed (42). Sampling is stratified by day and label, and every row of the rare labels is retained (CIC-IDS2017: Bot, Web Attack Brute Force, XSS, SQL Injection, Infiltration, Heartbleed; UNSW-NB15: Shellcode, Analysis, Backdoor, Worms), so that every split and attack family can be evaluated. Because rare labels are over-represented, sample AUPRC and recall are not comparable with full-data values. Per-label counts are listed in `data/sample/SAMPLE_README.md`.
 
-Sample. data/sample/ contains 40K CIC flows and 10K UNSW records, created using data/make_sample.py with a fixed seed. Every split and family can be scored on the sample, as rows are stratified by day and label and each row of the rare labels is kept (CIC: Bot, Web Attack Brute Force, XSS, SQL Injection, Infiltration, Heartbleed; UNSW: Shellcode, Analysis, Backdoor, Worms). Sample based AUPRC and recall are not comparable to the full-data numbers, due to the oversampling of rare labels. Per label counts are in data/sample/SAMPLE_README.md.
-
-## 3. Method
+## 3. Methodology
 
 **Splits.**
 
-- Random (both datasets): 70/15/15 train/validation/test, stratified by attack family. This is the usual setup in papers and is the comparison for both stricter splits.
-- Time (CIC): train Monday to Wednesday (1,527,133 flows), validate Thursday (365,731), test Friday (565,133). Botnet, DDoS and port scan never appear in training.
-- Official (UNSW): the authors' training file, with 15% held out (stratified) for validation, against the authors' testing file.
+- *Random* (both datasets): 70/15/15 train/validation/test, stratified by attack family. This reproduces the common evaluation practice and serves as the reference for both stricter splits.
+- *Time* (CIC-IDS2017): training on Monday–Wednesday (1,527,133 flows), validation on Thursday (365,731) and testing on Friday (565,133). Botnet, DDoS and port-scan traffic never appears in training.
+- *Official* (UNSW-NB15): the authors' training file, with 15% held out (stratified) for validation, evaluated on the authors' testing file.
 
-**Models.**
+**Models.** Logistic regression is the baseline: it is a simple, interpretable linear reference (class-weighted; signed-log transform and standardization). Random forest (class-weighted, no scaling) is the comparison most frequently reported in intrusion-detection studies, which makes the results comparable with prior work. HistGradientBoosting (class-weighted, no scaling) is a strong and efficient model for large tabular data. Including both a weak and two strong models tests whether any performance decline is attributable to the evaluation rather than to model capacity.
 
-- Logistic regression (baseline): class weighted, signed-log transform and standardization.
-- Random forest: class-weighted, no scaling. The most common model in intrusion-detection papers.
-- HistGradientBoosting: class weighted, no scaling. Efficient and quick on large tables.
+**Preprocessing and leakage safeguards.** All preprocessing (median imputation, signed-log transform, standardization, one-hot encoding of the UNSW-NB15 `proto`, `service` and `state` columns) is part of a scikit-learn pipeline fit on training rows only. Duplicates are removed before splitting. Because removing identifier columns creates additional identical rows, each split also removes validation and test rows that are identical to a training row (on the CIC-IDS2017 time split: 32,379 validation and 30,590 test rows). `LeakageChecker` in `src/splits.py` stops the run if any train/validation or train/test overlap remains.
 
-The text columns at UNSW (protocol, service, state) are one-hot encoded. Each run is based on seeds 0, 1 and 2 configured in config.py.
+**Metrics and threshold selection.** The metrics are AUROC, AUPRC and recall at a 1% false positive rate (higher is better for all three). The alert threshold is set on the validation set so that 1% of benign validation flows raise an alert and is applied unchanged to the test set; the resulting test false positive rate is reported alongside recall, as is recall per attack family. Recall at 1% FPR is the primary metric because a security operations team can investigate only a limited number of false alarms.
 
-**Metrics.** AUROC, AUPRC and recall at 1% false positive rate (higher is better for all three). Alert threshold is selected on validation to ensure 1% of the benign validation flows will trigger an alert, and remains the same for test. We also include the test FPR at that threshold and recall per attack family. The primary metric is recall at 1% FPR because a security team can only follow up on a limited number of false alarms.
+**Seeds.** Every configuration is run with seeds 0, 1 and 2, defined in `config.py`, and results are reported as the mean over seeds.
 
 ## 4. Progress
 
-Have done and in the repository:
+The interim target (data loaded, an initial pipeline working and a preliminary baseline evaluated) has been met. All 36 full-data runs (2 datasets × 2 splits × 3 models × 3 seeds) are complete.
 
-- Download with MD5 checks, cleaning and bundled sample: data/
-- See src/splits.py for leakage checking that can be done on random, time and official splits.
-- The code has been broken down into three sections: metrics, models, and evaluation (src/metrics.py, src/models.py, src/evaluate.py).
-- Single entry point main.py: 36 runs (2 datasets, 2 splits/dataset, 3 models, 3 seeds)
-- The tables and figures are made by src/analysis.py and saved in results/sample/ and results/full/.
-- Smoke test of synthetic data: tests/smoke_test.py
-- A local dashboard including the goal, datasets and result charts and running the commands: dashboard/server.py
+| Component | Evidence in repository | Owner |
+|---|---|---|
+| Data download with MD5 verification | `data/download.py`, `config.py` | Arya Pravin Joshi |
+| Cleaning and row-count log | `data/clean.py` | Arya Pravin Joshi |
+| Bundled stratified sample | `data/make_sample.py`, `data/sample/` | Arya Pravin Joshi |
+| Random, time and official splits; leakage checks | `src/splits.py`, `src/data_io.py` | Arya Pravin Joshi |
+| Metrics and threshold selection | `src/metrics.py` | Arya Pravin Joshi |
+| Logistic regression baseline | `src/models.py` | Arya Pravin Joshi |
+| Random forest and HistGradientBoosting | `src/models.py` | Aditya More |
+| Evaluation and single entry point (`python main.py`, `--full`) | `src/evaluate.py`, `main.py` | Arya Pravin Joshi |
+| Synthetic-data smoke test | `tests/smoke_test.py` | Arya Pravin Joshi |
+| Result tables and figures | `src/analysis.py`, `results/sample/`, `results/full/` | Aditya More |
+| Local results dashboard | `dashboard/` | Both |
 
-## 5. Current results (preliminary)
+## 5. Preliminary Results
 
-Full data, mean of 3 seeds, recall at 1% FPR (AUROC in brackets). Higher is better. The data is from [results/full/analysis/main_table.csv](results/full/analysis/main_table.csv) and [results/full/gap_table.csv](results/full/gap_table.csv).
+*Preliminary findings.* Evaluation conditions: full cleaned data; random, time (CIC-IDS2017) and official (UNSW-NB15) splits as defined in Section 3; threshold set at 1% FPR on validation; mean over seeds 0, 1 and 2. Table entries are recall at 1% FPR with AUROC in parentheses (higher is better). Source: [`results/full/analysis/main_table.csv`](results/full/analysis/main_table.csv) and [`results/full/gap_table.csv`](results/full/gap_table.csv).
 
-| Split | Logistic regression | Random forest | HistGradientBoosting |
+| Split | Logistic Regression (baseline) | Random Forest | HistGradientBoosting |
 |---|---:|---:|---:|
-| CIC random | 0.894 (0.994) | 1.000 (1.000) | 1.000 (1.000) |
-| CIC time, test = Friday | 0.373 (0.831) | 0.382 (0.909) | 0.381 (0.922) |
-| UNSW random | 0.492 (0.960) | 0.757 (0.981) | 0.754 (0.980) |
-| UNSW official split | 0.558 (0.930) | 0.777 (0.964) | 0.807 (0.968) |
+| CIC-IDS2017 random | 0.894 (0.994) | 1.000 (1.000) | 1.000 (1.000) |
+| CIC-IDS2017 time (test = Friday) | 0.373 (0.831) | 0.382 (0.909) | 0.381 (0.922) |
+| UNSW-NB15 random | 0.492 (0.960) | 0.757 (0.981) | 0.754 (0.980) |
+| UNSW-NB15 official | 0.558 (0.930) | 0.777 (0.964) | 0.807 (0.968) |
 
-![Recall at 1% FPR for each model on the random/ stricter split of each data set, full data](results/full/figures/recall_by_split.png)
+![Bar chart of recall at 1% FPR for logistic regression, random forest and HistGradientBoosting on the random and stricter split of each dataset, full data](results/full/figures/recall_by_split.png)
 
-*Recall at 1% FPR for each model on the random/ stricter split of each data set, full data*
+*Figure 1. Recall at 1% FPR for each model on the random and stricter split of each dataset (full data).*
 
-The tree models perform nearly perfectly on the CIC random split, but reach only about 38% when tested on a later day (Friday). The test FPR also drifts from 1% to 1.7–2.8%. The three models converge fairly close, and the loss occurs from the evaluation and not from one of the models being flaky.
+![Bar chart of recall at 1% FPR per Friday attack family (botnet, DDoS, port scan) for each model on the CIC-IDS2017 time split, full data](results/full/figures/time_split_families.png)
 
-Looking at the time split per family on Friday, all three types of models catch 63–64% of DDoS, 1–2% of port scans, and 0% of botnet flows. The attacks missed are the ones not seen in training.
+*Figure 2. Recall at 1% FPR per Friday attack family on the CIC-IDS2017 time split (full data).*
 
-![Recall per Friday attack family on time split, full data](results/full/figures/time_split_families.png)
+1. On CIC-IDS2017 the tree ensembles are nearly perfect on the random split (recall 1.000) but reach only about 0.38 on the Friday test. The test false positive rate also rises from the 1% target to 1.7–2.8%.
+2. All three models converge to similar recall on the time split (0.373–0.382), which indicates that the decline is a property of the evaluation rather than of a particular model.
+3. Per family on Friday, all models detect 63–64% of DDoS, 1–2% of port-scan and 0% of botnet flows; the missed attacks are those absent from training.
+4. On UNSW-NB15 the official split does not reduce recall (it is higher than on the random split for every model), but AUROC decreases for every model and the validation threshold yields a 2.5–4.5% false positive rate on the official test file instead of 1%.
+5. The bundled sample reproduces the same pattern at a smaller scale (random forest recall at 1% FPR: 0.991 on the CIC-IDS2017 random split, 0.232 on the time split; [`results/sample/gap_table.csv`](results/sample/gap_table.csv)). The sample run verifies the pipeline; conclusions rest on the full-data runs.
 
-*Recall per Friday attack family on time split, full data*
+## 6. Challenges and Mitigations
 
-On UNSW, the official split does not lower recall (it is higher than on the random split for every model), but AUROC drops slightly for each model, and the threshold chosen on the validation set results in a 2.5–4.5% FPR on the official test file rather than 1%.
+| Challenge | Action taken | Status |
+|---|---|---|
+| The official CIC-IDS2017 download now requires a registration form. | A public copy was used; the official file was later obtained through the form and its MD5 checksum matched. | Resolved |
+| Removing identifier columns (e.g. ports) made some validation and test rows identical to training rows. | Per-split overlap removal and a leakage check that stops the run if any overlap remains. | Resolved |
+| Cleaning the full CIC-IDS2017 data needs about 9 GB of free memory; the 36 full runs take about 25–30 minutes on a laptop CPU. | Runs are saved individually and `--resume` continues an interrupted full run. | Resolved |
+| On UNSW-NB15 the validation threshold does not transfer to the official test file (test FPR 2.5–4.5%). | The test FPR is reported next to every recall value. | To be analysed in the final report |
+| Redistribution terms for the bundled sample must be confirmed before the repository is made public. | Repository kept private; the instructor has been invited. | Open |
 
-The same pattern can be seen in the sample run, which is shown at a smaller scale (e.g. random forest recall: 0.991 at 1% FPR for the CIC random split, 0.232 at 1% FPR for the time split). It verifies the functionality of the pipeline, the results of the full-data runs form the conclusions.
+## 7. Plan for Completion
 
-## 6. Challenges
+| Priority | Task | Owner |
+|---|---|---|
+| 1 | Leave-one-attack-family-out splits on both datasets | Aditya More |
+| 1 | Benign-only Isolation Forest as an anomaly-detection comparison | Aditya More |
+| 1 | Final report (2,500–3,500 words), README and fresh-clone test | Both |
+| 2 | Port-feature ablation and a check against the corrected CIC-IDS2017 release (Engelen et al. [3]) | Arya Pravin Joshi |
+| 2 | Error analysis of the missed port-scan and botnet traffic | Both |
+| 2 | Small validation-only tuning grid for each model | Aditya More |
+| 3 | Fallback to an anomaly score when the supervised model is uncertain | Aditya More |
+| 3 | Cross-dataset test between CIC-IDS2017 and UNSW-NB15 on shared features | Aditya More |
 
-- The official download of CIC-IDS2017 now asks for a registration form. We took a public copy, then downloaded the official file through the form and verified that the MD5 was the same.
-- Some validation and test rows were the same as training rows after dropping identifier columns such as ports. We've added an overlap remover, and a check to prevent the run from continuing if there is overlap.
-- The cleaning of the entire CIC requires approximately 9 GB of free memory, while the 36 full runs require approximately 25–30 minutes on a laptop CPU. We also added --resume to enable a full run to resume after it is interrupted.
-- The validation threshold is not portable to the official test file (FPR 2.5–4.5%) on UNSW. This is reported next to each recall value as test FPR.
-- Prior to making the repository public, the dataset terms must be confirmed for sharing the bundled sample.
+*Scope note.* The research question and datasets are unchanged from the proposal. The cross-dataset test is optional and will be dropped if time does not permit; priority-1 items will be completed first.
 
-## 7. Plan for December 7
+## 8. Individual Contributions
 
-- Leave-one-attack-family-out splits on both datasets and a benign-only Isolation Forest (Aditya).
-- Feature ablation on ports and a check on the corrected CIC-IDS2017 release of Engelen et al. (Arya).
-- If time permits, cross-dataset test between CIC & UNSW on shared features (Aditya).
-- A small validation set tuning grid for each model (Aditya).
-- When the supervised model is uncertain, a fallback to an anomaly score (Aditya).
-- Error analysis of why port scans and botnet are not detected (both).
-- Final report (2,500–3,500 words), README and fresh-clone test (both).
-
-## 8. Who did what
-
-- **Arya Pravin Joshi:** data download and MD5 checks, cleaning, bundled sample, random splits, time split, official split, leakage controls, metrics, logistic regression baseline, main.py, smoke test, dashboard server.
-- **Aditya More:** random forest and HistGradientBoosting runs, analysis tables and figures, dashboard result charts.
+- **Arya Pravin Joshi:** data download and MD5 verification, cleaning, bundled sample, random/time/official splits, leakage controls, metrics, logistic regression baseline, `main.py`, smoke test, dashboard server.
+- **Aditya More:** random forest and HistGradientBoosting experiments, analysis tables and figures, dashboard result charts.
 
 ## References
 
-1. I. Sharafaldin, A. H. Lashkari, and A. A. Ghorbani, "Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic Characterization," in *Proc. 4th Int. Conf. on Information Systems Security and Privacy (ICISSP)*, 2018, pp. 108–116.
-2. N. Moustafa and J. Slay, "UNSW-NB15: A comprehensive data set for network intrusion detection systems (UNSW-NB15 network data set)," in *Proc. Military Communications and Information Systems Conf. (MilCIS)*, 2015.
-3. G. Engelen, V. Rimmer, and W. Joosen, "Troubleshooting an Intrusion Detection Dataset: the CICIDS2017 Case Study," in *Proc. IEEE Security and Privacy Workshops (SPW)*, 2021, pp. 7–12.
-4. F. Pedregosa et al., "Scikit-learn: Machine Learning in Python," *Journal of Machine Learning Research*, vol. 12, pp. 2825–2830, 2011.
+1. I. Sharafaldin, A. H. Lashkari, and A. A. Ghorbani, "Toward generating a new intrusion detection dataset and intrusion traffic characterization," in *Proc. 4th Int. Conf. Information Systems Security and Privacy (ICISSP)*, 2018, pp. 108–116.
+2. N. Moustafa and J. Slay, "UNSW-NB15: A comprehensive data set for network intrusion detection systems (UNSW-NB15 network data set)," in *Proc. Military Communications and Information Systems Conf. (MilCIS)*, 2015, pp. 1–6.
+3. G. Engelen, V. Rimmer, and W. Joosen, "Troubleshooting an intrusion detection dataset: the CICIDS2017 case study," in *Proc. IEEE Security and Privacy Workshops (SPW)*, 2021, pp. 7–12.
+4. F. Pedregosa et al., "Scikit-learn: Machine learning in Python," *J. Mach. Learn. Res.*, vol. 12, pp. 2825–2830, 2011.
