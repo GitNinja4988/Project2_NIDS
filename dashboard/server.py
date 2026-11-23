@@ -330,13 +330,17 @@ class ResultFiles(FileReader):
 
 
 class DatasetFiles(FileReader):
+    N = r"([\d,]+)"
     PATTERNS = {
-        "rows_raw": r"\|\s*Raw rows\s*\|\s*([\d,]+)\s*\|\s*([\d,]+)\s*\|",
-        "rows_dropped_exact_duplicates": r"\|\s*Exact duplicate rows removed[^\|]*\|\s*([\d,]+)\s*\|\s*([\d,]+)\s*\|",
-        "rows_dropped_label_conflicts": (r"\|\s*Rows removed because identical features had different labels"
-                                         r"\s*\|\s*([\d,]+)\s*\|\s*([\d,]+)\s*\|"),
-        "rows_clean": r"\|\s*Clean rows\s*\|\s*\*?\*?([\d,]+)\*?\*?\s*\|\s*\*?\*?([\d,]+)",
-        "rows_with_inf": r"\|\s*Rows with ±infinity[^\|]*\|\s*([\d,]+)[^\|]*\|\s*([\d,]+)\s*\|",
+        "rows_with_inf": (rf"converted\s+{N}\s+rows\s+containing\s+infinite\s+values\s+in\s+CIC-IDS2017"
+                          rf"\s+\({N}\s+in\s+UNSW-NB15\)", 1, 2),
+        "rows_dropped_exact_duplicates": (rf"removed\s+{N}\s+and\s+{N}\s+exact\s+duplicate\s+rows", 1, 2),
+        "rows_dropped_label_conflicts": (rf"{N}\s+and\s+{N}\s+rows\s+whose\s+identical\s+features"
+                                         rf"\s+carried\s+different\s+labels", 1, 2),
+        "rows_raw": (rf"reducing\s+CIC-IDS2017\s+from\s+{N}\s+to\s+{N}\s+rows\s+and\s+UNSW-NB15"
+                     rf"\s+from\s+{N}\s+to\s+{N}\s+rows", 1, 3),
+        "rows_clean": (rf"reducing\s+CIC-IDS2017\s+from\s+{N}\s+to\s+{N}\s+rows\s+and\s+UNSW-NB15"
+                       rf"\s+from\s+{N}\s+to\s+{N}\s+rows", 2, 4),
     }
 
     def clean_log(self, dataset):
@@ -345,18 +349,18 @@ class DatasetFiles(FileReader):
         if log is not None:
             log["source"] = str(path.relative_to(Settings.REPO_ROOT))
             return log
-        return self.from_data_decisions().get(dataset)
+        return self.from_report().get(dataset)
 
-    def from_data_decisions(self):
+    def from_report(self):
         path = Settings.REPO_ROOT / "report.md"
         text = path.read_text(encoding="utf-8") if path.is_file() else ""
         cic = {"dataset": "cic", "source": "report.md"}
         unsw = {"dataset": "unsw", "source": "report.md"}
-        for key, pattern in self.PATTERNS.items():
+        for key, (pattern, cic_group, unsw_group) in self.PATTERNS.items():
             m = re.search(pattern, text)
             if m:
-                cic[key] = self.to_int(m.group(1))
-                unsw[key] = self.to_int(m.group(2))
+                cic[key] = self.to_int(m.group(cic_group))
+                unsw[key] = self.to_int(m.group(unsw_group))
         return {"cic": cic, "unsw": unsw}
 
     @staticmethod
