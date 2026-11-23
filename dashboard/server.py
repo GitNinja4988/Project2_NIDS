@@ -332,11 +332,9 @@ class ResultFiles(FileReader):
 class DatasetFiles(FileReader):
     N = r"([\d,]+)"
     PATTERNS = {
-        "rows_with_inf": (rf"converted\s+{N}\s+rows\s+containing\s+infinite\s+values\s+in\s+CIC-IDS2017"
-                          rf"\s+\({N}\s+in\s+UNSW-NB15\)", 1, 2),
-        "rows_dropped_exact_duplicates": (rf"removed\s+{N}\s+and\s+{N}\s+exact\s+duplicate\s+rows", 1, 2),
-        "rows_dropped_label_conflicts": (rf"{N}\s+and\s+{N}\s+rows\s+whose\s+identical\s+features"
-                                         rf"\s+carried\s+different\s+labels", 1, 2),
+        "rows_dropped_exact_duplicates": (rf"Duplicate\s+rows\s+\({N}\s+in\s+CIC-IDS2017\s+and\s+{N}\s+in"
+                                          rf"\s+UNSW-NB15\)", 1, 2),
+        "rows_dropped_label_conflicts": (rf"label-conflicting\s+rows\s+\({N}\s+and\s+{N}\)", 1, 2),
         "rows_raw": (rf"reducing\s+CIC-IDS2017\s+from\s+{N}\s+to\s+{N}\s+rows\s+and\s+UNSW-NB15"
                      rf"\s+from\s+{N}\s+to\s+{N}\s+rows", 1, 3),
         "rows_clean": (rf"reducing\s+CIC-IDS2017\s+from\s+{N}\s+to\s+{N}\s+rows\s+and\s+UNSW-NB15"
