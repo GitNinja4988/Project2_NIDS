@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>NIDS Milestone Dashboard · EAS 510 Project 2</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="#top">project2-nids · milestone</a>
+      <nav class="nav" aria-label="Section">
+        <a href="#question">Question</a>
+        <a href="#goals">Goals</a>
+        <a href="#team">Team</a>
+        <a href="#datasets">Datasets</a>
+        <a href="#results">Results</a>
+        <a href="#terminal">Terminal</a>
+        <a href="#next">Next</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <p class="section-kicker">EAS 510 · Fall 2026 · Project 2 milestone</p>
+      <h1 id="question">How much does NIDS evaluation overestimate performance?</h1>
+      <p class="lede">
+        Papers on ML intrusion detection often report 99%+ on CIC-IDS2017 under a random
+        train/test split. This milestone measures how far those scores fall when the test
+        is closer to real use: a Friday time hold-out on CIC-IDS2017, and the authors’
+        official split on UNSW-NB15.
+      </p>
+      <div class="hero__cta">
+        <a class="btn" href="#results">See the drop</a>
+        <a class="btn btn--ghost" href="#terminal">Run from the terminal</a>
+      </div>
+      <div class="hero__meta">
+        <span>Arya Pravin Joshi · Aditya More</span>
+        <span>Recall @ 1% FPR · AUROC · AUPRC</span>
+        <span>logreg · RF · HGB</span>
+      </div>
+    </section>
+
+    <section id="goals">
+      <div class="split-intro">
+        <div>
+          <p class="section-kicker">Milestone goals</p>
+          <h2>Halfway checkpoint: data, splits, leakage, first models</h2>
+          <p class="lede">
+            The milestone covers the first half of the project only. Later work
+            (LOFO, Isolation Forest, hybrid, ablations, cross-dataset) is listed
+            under What’s next—not shown as results here.
+          </p>
+        </div>
+        <div>
+          <p>
+            Status comes from the milestone report. Every goal below is
+            complete for the Nov&nbsp;23 update.
+          </p>
+        </div>
+      </div>
+      <ul class="goal-list" id="goal-list" aria-live="polite"></ul>
+    </section>
+
+    <section id="team">
+      <p class="section-kicker">Who did what</p>
+      <h2>Owners for the milestone deliverables</h2>
+      <div class="team-grid" id="team-grid"></div>
+    </section>
+
+    <section id="datasets">
+      <p class="section-kicker">Datasets</p>
+      <h2>CIC-IDS2017 and UNSW-NB15 after cleaning</h2>
+      <p class="lede">
+        Row counts, duplicates, conflicts, and class balance are read from the
+        committed cleaning documentation and <code>data/sample/sample_info.json</code>,
+        plus split sizes from the saved run files.
+      </p>
+
+      <div class="dataset-tabs" role="tablist" aria-label="Dataset">
+        <button class="tab" role="tab" id="tab-cic" aria-selected="true" aria-controls="panel-cic" data-dataset="cic">CIC-IDS2017</button>
+        <button class="tab" role="tab" id="tab-unsw" aria-selected="false" aria-controls="panel-unsw" data-dataset="unsw">UNSW-NB15</button>
+      </div>
+
+      <div id="panel-cic" role="tabpanel" aria-labelledby="tab-cic">
+        <dl class="stat-row" id="cic-stats"></dl>
+        <p class="source-note" id="cic-source"></p>
+        <h3>Class balance (full clean data)</h3>
+        <div id="cic-balance"></div>
+        <h3>Splits used at the milestone</h3>
+        <div id="cic-splits"></div>
+      </div>
+
+      <div id="panel-unsw" class="hidden" role="tabpanel" aria-labelledby="tab-unsw">
+        <dl class="stat-row" id="unsw-stats"></dl>
+        <p class="source-note" id="unsw-source"></p>
+        <h3>Class balance (full clean data)</h3>
+        <div id="unsw-balance"></div>
+        <h3>Splits used at the milestone</h3>
+        <div id="unsw-splits"></div>
+      </div>
+    </section>
+
+    <section id="results">
+      <p class="section-kicker">Results</p>
+      <h2>Random vs stricter splits · mean of 3 seeds</h2>
+      <p class="lede">
+        Charts and tables load from <code>results/&lt;scope&gt;/</code> CSV and JSON.
+        Switch scope to compare the bundled sample with the committed full-data numbers.
+      </p>
+
+      <div class="toolbar">
+        <label>
+          Scope
+          <select id="scope-select" name="scope" autocomplete="off">
+            <option value="full" selected>full (committed)</option>
+            <option value="sample">sample</option>
+          </select>
+        </label>
+        <button type="button" class="btn btn--ghost" id="refresh-results">Refresh charts</button>
+        <span class="source-note" id="results-stamp" aria-live="polite"></span>
+      </div>
+
+      <div class="gap-callout" id="gap-callout"></div>
+
+      <div class="chart-block">
+        <h3>Recall at 1% FPR by split</h3>
+        <p class="chart-caption">
+          Threshold chosen on validation so 1% of benign validation flows alert,
+          then applied unchanged on test. Source: <code>gap_table.csv</code>.
+        </p>
+        <div class="chart-frame chart-frame--tall">
+          <canvas id="chart-recall" aria-label="Recall at 1 percent FPR by split"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <h3>AUROC by split</h3>
+        <p class="chart-caption">Area under the ROC curve, mean over seeds 0, 1, 2.</p>
+        <div class="chart-frame">
+          <canvas id="chart-auroc" aria-label="AUROC by split"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <h3>AUPRC by split</h3>
+        <p class="chart-caption">Area under the precision–recall curve.</p>
+        <div class="chart-frame">
+          <canvas id="chart-auprc" aria-label="AUPRC by split"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <h3>Test FPR at the validation threshold</h3>
+        <p class="chart-caption">
+          Target on validation is 1%. Drift above 1% on a stricter split means the
+          threshold no longer matches the test distribution.
+        </p>
+        <div class="chart-frame">
+          <canvas id="chart-fpr" aria-label="Test FPR by split"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <h3>Per-family recall on the CIC Friday time split</h3>
+        <p class="chart-caption">
+          Botnet, DDoS, and port scan never appear in Mon–Wed training.
+          Source: <code>analysis/time_split_family_recall.csv</code>.
+        </p>
+        <div class="chart-frame">
+          <canvas id="chart-family" aria-label="Per-family recall on Friday time split"></canvas>
+        </div>
+      </div>
+
+      <h3>Gap table</h3>
+      <p class="chart-caption">
+        <code>gap_*</code> columns are random − stricter (positive means the stricter
+        split scores lower). Numbers from <code>gap_table.csv</code>.
+      </p>
+      <div id="gap-table-wrap"></div>
+
+      <h3>Main metrics table</h3>
+      <div id="main-table-wrap"></div>
+    </section>
+
+    <section class="terminal-section" id="terminal">
+      <p class="section-kicker">Laptop terminal</p>
+      <h2>Run the documented milestone commands here</h2>
+      <p class="lede">
+        Commands execute in the repo directory on this machine. Stdout and stderr
+        stream live. When a run finishes, the charts above reload from the newly
+        written result files.
+      </p>
+
+      <div class="terminal-shell">
+        <div class="preset-row" id="preset-row" role="group" aria-label="Documented commands"></div>
+        <div class="terminal-meta">
+          <span id="term-status">idle</span>
+          <span id="term-command"></span>
+        </div>
+        <pre class="terminal-output" id="term-output" aria-live="polite" aria-relevant="additions"></pre>
+        <form class="terminal-form" id="term-form" autocomplete="off">
+          <label class="visually-hidden" for="term-input" style="position:absolute;left:-9999px">Command</label>
+          <input id="term-input" name="command" spellcheck="false" autocomplete="off"
+                 placeholder="python tests/smoke_test.py…" />
+          <button type="submit" class="btn" id="term-run">Run</button>
+          <button type="button" class="btn btn--danger" id="term-stop">Stop</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="next">
+      <p class="section-kicker">What’s next</p>
+      <h2>Planned for the final (Dec 7)</h2>
+      <p class="lede">
+        These items are out of scope for the milestone dashboard. They appear only
+        as a short plan list.
+      </p>
+      <ul class="planned-list" id="planned-list"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      Local dashboard · binds 127.0.0.1 only · data from committed
+      <code>results/</code> and <code>report.md</code> · start with
+      <code>python dashboard/server.py</code>
+    </p>
+  </footer>
+</body>
+</html>
