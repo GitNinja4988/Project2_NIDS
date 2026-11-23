@@ -1,0 +1,98 @@
+{
+  "cic": {
+    "seed": 42,
+    "target_size": 40000,
+    "actual_size": 40000,
+    "strata": [
+      "day",
+      "label"
+    ],
+    "rare_labels_kept_in_full": [
+      "Bot",
+      "Web Attack - Brute Force",
+      "Web Attack - XSS",
+      "Infiltration",
+      "Web Attack - Sql Injection",
+      "Heartbleed"
+    ],
+    "rare_rows": 4143,
+    "per_label_full": {
+      "BENIGN": 2095786,
+      "DoS Hulk": 172719,
+      "DDoS": 128013,
+      "PortScan": 90255,
+      "DoS GoldenEye": 10286,
+      "FTP-Patator": 5933,
+      "DoS slowloris": 5384,
+      "DoS Slowhttptest": 5228,
+      "SSH-Patator": 3219,
+      "Bot": 1953,
+      "Web Attack - Brute Force": 1470,
+      "Web Attack - XSS": 652,
+      "Infiltration": 36,
+      "Web Attack - Sql Injection": 21,
+      "Heartbleed": 11
+    },
+    "per_label_sample": {
+      "BENIGN": 28693,
+      "DoS Hulk": 2482,
+      "Bot": 1953,
+      "DDoS": 1892,
+      "Web Attack - Brute Force": 1470,
+      "PortScan": 1393,
+      "Web Attack - XSS": 652,
+      "DoS GoldenEye": 336,
+      "FTP-Patator": 278,
+      "DoS slowloris": 271,
+      "DoS Slowhttptest": 269,
+      "SSH-Patator": 243,
+      "Infiltration": 36,
+      "Web Attack - Sql Injection": 21,
+      "Heartbleed": 11
+    },
+    "file": "data/sample/cic_sample.csv.gz",
+    "bytes": 3800674
+  },
+  "unsw": {
+    "seed": 42,
+    "target_size": 10000,
+    "actual_size": 10000,
+    "strata": [
+      "part",
+      "label"
+    ],
+    "rare_labels_kept_in_full": [
+      "Shellcode",
+      "Analysis",
+      "Backdoor",
+      "Worms"
+    ],
+    "rare_rows": 2405,
+    "per_label_full": {
+      "Normal": 85308,
+      "Exploits": 25451,
+      "Fuzzers": 18749,
+      "Reconnaissance": 8419,
+      "Generic": 7283,
+      "DoS": 3624,
+      "Shellcode": 1446,
+      "Analysis": 450,
+      "Backdoor": 350,
+      "Worms": 159
+    },
+    "per_label_sample": {
+      "Normal": 3378,
+      "Shellcode": 1446,
+      "Exploits": 1288,
+      "Fuzzers": 1055,
+      "Reconnaissance": 694,
+      "Generic": 654,
+      "DoS": 526,
+      "Analysis": 450,
+      "Backdoor": 350,
+      "Worms": 159
+    },
+    "file": "data/sample/unsw_sample.csv.gz",
+    "bytes": 728382
+  }
+}
