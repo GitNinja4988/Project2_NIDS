@@ -1,0 +1,146 @@
+{
+  "model": "hgb",
+  "split": "random",
+  "dataset": "cic",
+  "scope": "full",
+  "seed": 2,
+  "auroc": 0.9999661679696998,
+  "auprc": 0.9998914069391699,
+  "attack_prevalence_test": 0.15523820376284644,
+  "threshold": 0.051271972786248315,
+  "target_fpr": 0.01,
+  "recall_at_1pct_fpr": 0.999841288735468,
+  "test_fpr_at_threshold": 0.010113199292732277,
+  "per_family_recall": {
+    "botnet": {
+      "recall": 0.9853658536585366,
+      "n": 205
+    },
+    "brute_force": {
+      "recall": 1.0,
+      "n": 1373
+    },
+    "ddos": {
+      "recall": 1.0,
+      "n": 19202
+    },
+    "dos": {
+      "recall": 0.999931129476584,
+      "n": 29040
+    },
+    "heartbleed": {
+      "recall": 1.0,
+      "n": 2
+    },
+    "infiltration": {
+      "recall": 0.6666666666666666,
+      "n": 6
+    },
+    "portscan": {
+      "recall": 0.99609375,
+      "n": 256
+    },
+    "web_attack": {
+      "recall": 1.0,
+      "n": 322
+    }
+  },
+  "val_fpr_at_threshold": 0.009983700824439282,
+  "val_auroc": 0.9999787054840318,
+  "fit_seconds": 87.476,
+  "score_seconds": 3.115,
+  "leakage": {
+    "train_test_overlap_rows": 0,
+    "train_val_overlap_rows": 0,
+    "id_columns_present": [],
+    "port_columns_present": [],
+    "meta_columns_present": [],
+    "passed": true
+  },
+  "preprocessing_check": {
+    "preprocessing_rows_seen": [
+      1764673
+    ],
+    "train_rows": 1764673,
+    "fit_on_train_only": true
+  },
+  "model_params": {
+    "categorical_features": "from_dtype",
+    "class_weight": "balanced",
+    "early_stopping": true,
+    "interaction_cst": null,
+    "l2_regularization": 0.0,
+    "learning_rate": 0.1,
+    "loss": "log_loss",
+    "max_bins": 255,
+    "max_depth": null,
+    "max_features": 1.0,
+    "max_iter": 300,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 20,
+    "monotonic_cst": null,
+    "n_iter_no_change": 10,
+    "random_state": 2,
+    "scoring": "loss",
+    "tol": 1e-07,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false,
+    "n_iter": 159,
+    "converged": true
+  },
+  "split_summary": {
+    "name": "random",
+    "dataset": "cic",
+    "scope": "full",
+    "seed": 2,
+    "n_features": 76,
+    "train": {
+      "n": 1764673,
+      "n_attack": 297623,
+      "families": {
+        "benign": 1467050,
+        "dos": 135531,
+        "ddos": 89609,
+        "portscan": 63178,
+        "brute_force": 6406,
+        "web_attack": 1500,
+        "botnet": 1367,
+        "infiltration": 25,
+        "heartbleed": 7
+      }
+    },
+    "val": {
+      "n": 324621,
+      "n_attack": 50374,
+      "families": {
+        "benign": 274247,
+        "dos": 29036,
+        "ddos": 19202,
+        "brute_force": 1373,
+        "web_attack": 321,
+        "portscan": 232,
+        "botnet": 203,
+        "infiltration": 5,
+        "heartbleed": 2
+      }
+    },
+    "test": {
+      "n": 324701,
+      "n_attack": 50406,
+      "families": {
+        "benign": 274295,
+        "dos": 29040,
+        "ddos": 19202,
+        "brute_force": 1373,
+        "web_attack": 322,
+        "portscan": 256,
+        "botnet": 205,
+        "infiltration": 6,
+        "heartbleed": 2
+      }
+    },
+    "val_rows_removed_overlap_with_train": 53524,
+    "test_rows_removed_overlap_with_train": 53447
+  }
+}

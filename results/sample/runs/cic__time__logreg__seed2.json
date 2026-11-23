@@ -1,0 +1,137 @@
+{
+  "model": "logreg",
+  "split": "time",
+  "dataset": "cic",
+  "scope": "sample",
+  "seed": 2,
+  "auroc": 0.7243770541540624,
+  "auprc": 0.750152180831316,
+  "attack_prevalence_test": 0.5080011638056444,
+  "threshold": 0.8564062794629025,
+  "target_fpr": 0.01,
+  "recall_at_1pct_fpr": 0.22661321114929361,
+  "test_fpr_at_threshold": 0.019515079834417505,
+  "per_family_recall": {
+    "botnet": {
+      "recall": 0.0,
+      "n": 1953
+    },
+    "ddos": {
+      "recall": 0.6242071881606766,
+      "n": 1892
+    },
+    "portscan": {
+      "recall": 0.004307250538406317,
+      "n": 1393
+    }
+  },
+  "val_fpr_at_threshold": 0.00993625796775403,
+  "val_auroc": 0.9170084521903784,
+  "fit_seconds": 0.392,
+  "score_seconds": 0.022,
+  "leakage": {
+    "train_test_overlap_rows": 0,
+    "train_val_overlap_rows": 0,
+    "id_columns_present": [],
+    "port_columns_present": [],
+    "meta_columns_present": [],
+    "time_order_ok": true,
+    "passed": true
+  },
+  "preprocessing_check": {
+    "preprocessing_rows_seen": [
+      21989,
+      21989
+    ],
+    "train_rows": 21989,
+    "fit_on_train_only": true
+  },
+  "model_params": {
+    "C": 1.0,
+    "class_weight": "balanced",
+    "dual": false,
+    "fit_intercept": true,
+    "intercept_scaling": 1,
+    "l1_ratio": null,
+    "max_iter": 2000,
+    "multi_class": "deprecated",
+    "n_jobs": null,
+    "penalty": "l2",
+    "random_state": 2,
+    "solver": "lbfgs",
+    "tol": 0.0001,
+    "verbose": 0,
+    "warm_start": false,
+    "n_iter": 194,
+    "converged": true
+  },
+  "split_summary": {
+    "name": "time",
+    "dataset": "cic",
+    "scope": "sample",
+    "seed": 2,
+    "n_features": 76,
+    "train": {
+      "n": 21989,
+      "n_attack": 3890,
+      "families": {
+        "benign": 18099,
+        "dos": 3358,
+        "brute_force": 521,
+        "heartbleed": 11
+      }
+    },
+    "val": {
+      "n": 7513,
+      "n_attack": 2179,
+      "families": {
+        "benign": 5334,
+        "web_attack": 2143,
+        "infiltration": 36
+      }
+    },
+    "test": {
+      "n": 10311,
+      "n_attack": 5238,
+      "families": {
+        "benign": 5073,
+        "botnet": 1953,
+        "ddos": 1892,
+        "portscan": 1393
+      }
+    },
+    "days": {
+      "train": [
+        "Mon",
+        "Tue",
+        "Wed"
+      ],
+      "val": [
+        "Thu"
+      ],
+      "test": [
+        "Fri"
+      ]
+    },
+    "days_present": {
+      "train": [
+        "Mon",
+        "Tue",
+        "Wed"
+      ],
+      "val": [
+        "Thu"
+      ],
+      "test": [
+        "Fri"
+      ]
+    },
+    "families_unseen_in_train": [
+      "botnet",
+      "ddos",
+      "portscan"
+    ],
+    "val_rows_removed_overlap_with_train": 98,
+    "test_rows_removed_overlap_with_train": 89
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "model": "rf",
+  "split": "random",
+  "dataset": "cic",
+  "scope": "sample",
+  "seed": 0,
+  "auroc": 0.9995354031945494,
+  "auprc": 0.9987955210729336,
+  "attack_prevalence_test": 0.25259763525618056,
+  "threshold": 0.30402521491247936,
+  "target_fpr": 0.01,
+  "recall_at_1pct_fpr": 0.9929078014184397,
+  "test_fpr_at_threshold": 0.01102588686481304,
+  "per_family_recall": {
+    "botnet": {
+      "recall": 0.9849246231155779,
+      "n": 199
+    },
+    "brute_force": {
+      "recall": 0.9873417721518988,
+      "n": 79
+    },
+    "ddos": {
+      "recall": 1.0,
+      "n": 284
+    },
+    "dos": {
+      "recall": 0.996031746031746,
+      "n": 504
+    },
+    "heartbleed": {
+      "recall": 1.0,
+      "n": 2
+    },
+    "infiltration": {
+      "recall": 1.0,
+      "n": 6
+    },
+    "portscan": {
+      "recall": 1.0,
+      "n": 14
+    },
+    "web_attack": {
+      "recall": 0.9875776397515528,
+      "n": 322
+    }
+  },
+  "val_fpr_at_threshold": 0.009891435464414958,
+  "val_auroc": 0.99817994248056,
+  "fit_seconds": 0.809,
+  "score_seconds": 0.083,
+  "leakage": {
+    "train_test_overlap_rows": 0,
+    "train_val_overlap_rows": 0,
+    "id_columns_present": [],
+    "port_columns_present": [],
+    "meta_columns_present": [],
+    "passed": true
+  },
+  "preprocessing_check": {
+    "preprocessing_rows_seen": [
+      27997
+    ],
+    "train_rows": 27997,
+    "fit_on_train_only": true
+  },
+  "model_params": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced_subsample",
+    "criterion": "gini",
+    "max_depth": 20,
+    "max_features": "sqrt",
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 100,
+    "n_jobs": 8,
+    "oob_score": false,
+    "random_state": 0,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "split_summary": {
+    "name": "random",
+    "dataset": "cic",
+    "scope": "sample",
+    "seed": 0,
+    "n_features": 76,
+    "train": {
+      "n": 27997,
+      "n_attack": 7912,
+      "families": {
+        "benign": 20085,
+        "dos": 2350,
+        "web_attack": 1500,
+        "botnet": 1367,
+        "ddos": 1324,
+        "portscan": 975,
+        "brute_force": 364,
+        "infiltration": 25,
+        "heartbleed": 7
+      }
+    },
+    "val": {
+      "n": 5561,
+      "n_attack": 1416,
+      "families": {
+        "benign": 4145,
+        "dos": 504,
+        "web_attack": 321,
+        "ddos": 284,
+        "botnet": 207,
+        "brute_force": 78,
+        "portscan": 15,
+        "infiltration": 5,
+        "heartbleed": 2
+      }
+    },
+    "test": {
+      "n": 5582,
+      "n_attack": 1410,
+      "families": {
+        "benign": 4172,
+        "dos": 504,
+        "web_attack": 322,
+        "ddos": 284,
+        "botnet": 199,
+        "brute_force": 79,
+        "portscan": 14,
+        "infiltration": 6,
+        "heartbleed": 2
+      }
+    },
+    "val_rows_removed_overlap_with_train": 439,
+    "test_rows_removed_overlap_with_train": 421
+  }
+}

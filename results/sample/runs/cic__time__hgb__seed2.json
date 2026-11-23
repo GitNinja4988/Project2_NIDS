@@ -1,0 +1,142 @@
+{
+  "model": "hgb",
+  "split": "time",
+  "dataset": "cic",
+  "scope": "sample",
+  "seed": 2,
+  "auroc": 0.8568253254300877,
+  "auprc": 0.8387274203885675,
+  "attack_prevalence_test": 0.5080011638056444,
+  "threshold": 0.02894611576905381,
+  "target_fpr": 0.01,
+  "recall_at_1pct_fpr": 0.22947689957999237,
+  "test_fpr_at_threshold": 0.020500689927064854,
+  "per_family_recall": {
+    "botnet": {
+      "recall": 0.0,
+      "n": 1953
+    },
+    "ddos": {
+      "recall": 0.6257928118393234,
+      "n": 1892
+    },
+    "portscan": {
+      "recall": 0.012921751615218953,
+      "n": 1393
+    }
+  },
+  "val_fpr_at_threshold": 0.00993625796775403,
+  "val_auroc": 0.988868804777099,
+  "fit_seconds": 1.187,
+  "score_seconds": 0.129,
+  "leakage": {
+    "train_test_overlap_rows": 0,
+    "train_val_overlap_rows": 0,
+    "id_columns_present": [],
+    "port_columns_present": [],
+    "meta_columns_present": [],
+    "time_order_ok": true,
+    "passed": true
+  },
+  "preprocessing_check": {
+    "preprocessing_rows_seen": [
+      21989
+    ],
+    "train_rows": 21989,
+    "fit_on_train_only": true
+  },
+  "model_params": {
+    "categorical_features": "from_dtype",
+    "class_weight": "balanced",
+    "early_stopping": true,
+    "interaction_cst": null,
+    "l2_regularization": 0.0,
+    "learning_rate": 0.1,
+    "loss": "log_loss",
+    "max_bins": 255,
+    "max_depth": null,
+    "max_features": 1.0,
+    "max_iter": 300,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 20,
+    "monotonic_cst": null,
+    "n_iter_no_change": 10,
+    "random_state": 2,
+    "scoring": "loss",
+    "tol": 1e-07,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false,
+    "n_iter": 145,
+    "converged": true
+  },
+  "split_summary": {
+    "name": "time",
+    "dataset": "cic",
+    "scope": "sample",
+    "seed": 2,
+    "n_features": 76,
+    "train": {
+      "n": 21989,
+      "n_attack": 3890,
+      "families": {
+        "benign": 18099,
+        "dos": 3358,
+        "brute_force": 521,
+        "heartbleed": 11
+      }
+    },
+    "val": {
+      "n": 7513,
+      "n_attack": 2179,
+      "families": {
+        "benign": 5334,
+        "web_attack": 2143,
+        "infiltration": 36
+      }
+    },
+    "test": {
+      "n": 10311,
+      "n_attack": 5238,
+      "families": {
+        "benign": 5073,
+        "botnet": 1953,
+        "ddos": 1892,
+        "portscan": 1393
+      }
+    },
+    "days": {
+      "train": [
+        "Mon",
+        "Tue",
+        "Wed"
+      ],
+      "val": [
+        "Thu"
+      ],
+      "test": [
+        "Fri"
+      ]
+    },
+    "days_present": {
+      "train": [
+        "Mon",
+        "Tue",
+        "Wed"
+      ],
+      "val": [
+        "Thu"
+      ],
+      "test": [
+        "Fri"
+      ]
+    },
+    "families_unseen_in_train": [
+      "botnet",
+      "ddos",
+      "portscan"
+    ],
+    "val_rows_removed_overlap_with_train": 98,
+    "test_rows_removed_overlap_with_train": 89
+  }
+}

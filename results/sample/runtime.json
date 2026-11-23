@@ -1,0 +1,27 @@
+{
+  "argv": {
+    "scope": "sample",
+    "datasets": [
+      "cic",
+      "unsw"
+    ],
+    "splits": [
+      "random",
+      "time",
+      "predefined"
+    ],
+    "models": [
+      "logreg",
+      "rf",
+      "hgb"
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "resume": false
+  },
+  "elapsed_seconds": 23.65,
+  "n_runs": 36
+}

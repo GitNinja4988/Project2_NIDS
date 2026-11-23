@@ -1,0 +1,147 @@
+{
+  "model": "logreg",
+  "split": "random",
+  "dataset": "unsw",
+  "scope": "full",
+  "seed": 0,
+  "auroc": 0.9596889025616213,
+  "auprc": 0.9462157698533079,
+  "attack_prevalence_test": 0.4360070515645659,
+  "threshold": 0.9031097077125109,
+  "target_fpr": 0.01,
+  "recall_at_1pct_fpr": 0.49085211765895076,
+  "test_fpr_at_threshold": 0.009455341095569274,
+  "per_family_recall": {
+    "analysis": {
+      "recall": 0.0,
+      "n": 68
+    },
+    "backdoor": {
+      "recall": 0.2641509433962264,
+      "n": 53
+    },
+    "dos": {
+      "recall": 0.5183823529411765,
+      "n": 544
+    },
+    "exploits": {
+      "recall": 0.7257726558407543,
+      "n": 3818
+    },
+    "fuzzers": {
+      "recall": 0.09811589050835406,
+      "n": 2813
+    },
+    "generic": {
+      "recall": 0.9039341262580055,
+      "n": 1093
+    },
+    "reconnaissance": {
+      "recall": 0.393507521773555,
+      "n": 1263
+    },
+    "shellcode": {
+      "recall": 0.041474654377880185,
+      "n": 217
+    },
+    "worms": {
+      "recall": 0.7916666666666666,
+      "n": 24
+    }
+  },
+  "val_fpr_at_threshold": 0.009924976555173493,
+  "val_auroc": 0.959750092231965,
+  "fit_seconds": 2.436,
+  "score_seconds": 0.046,
+  "leakage": {
+    "train_test_overlap_rows": 0,
+    "train_val_overlap_rows": 0,
+    "id_columns_present": [],
+    "port_columns_present": [],
+    "meta_columns_present": [],
+    "passed": true
+  },
+  "preprocessing_check": {
+    "preprocessing_rows_seen": [
+      105864,
+      105864
+    ],
+    "train_rows": 105864,
+    "fit_on_train_only": true
+  },
+  "model_params": {
+    "C": 1.0,
+    "class_weight": "balanced",
+    "dual": false,
+    "fit_intercept": true,
+    "intercept_scaling": 1,
+    "l1_ratio": 0.0,
+    "max_iter": 2000,
+    "n_jobs": null,
+    "penalty": "deprecated",
+    "random_state": 0,
+    "solver": "lbfgs",
+    "tol": 0.0001,
+    "verbose": 0,
+    "warm_start": false,
+    "n_iter": 320,
+    "converged": true
+  },
+  "split_summary": {
+    "name": "random",
+    "dataset": "unsw",
+    "scope": "full",
+    "seed": 0,
+    "n_features": 42,
+    "train": {
+      "n": 105864,
+      "n_attack": 46149,
+      "families": {
+        "benign": 59715,
+        "exploits": 17815,
+        "fuzzers": 13124,
+        "reconnaissance": 5893,
+        "generic": 5098,
+        "dos": 2536,
+        "shellcode": 1012,
+        "analysis": 315,
+        "backdoor": 245,
+        "worms": 111
+      }
+    },
+    "val": {
+      "n": 22685,
+      "n_attack": 9889,
+      "families": {
+        "benign": 12796,
+        "exploits": 3818,
+        "fuzzers": 2812,
+        "reconnaissance": 1263,
+        "generic": 1092,
+        "dos": 544,
+        "shellcode": 217,
+        "analysis": 67,
+        "backdoor": 52,
+        "worms": 24
+      }
+    },
+    "test": {
+      "n": 22690,
+      "n_attack": 9893,
+      "families": {
+        "benign": 12797,
+        "exploits": 3818,
+        "fuzzers": 2813,
+        "reconnaissance": 1263,
+        "generic": 1093,
+        "dos": 544,
+        "shellcode": 217,
+        "analysis": 68,
+        "backdoor": 53,
+        "worms": 24
+      }
+    },
+    "val_rows_removed_overlap_with_train": 0,
+    "test_rows_removed_overlap_with_train": 0
+  }
+}

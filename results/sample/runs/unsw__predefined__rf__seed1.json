@@ -1,0 +1,149 @@
+{
+  "model": "rf",
+  "split": "predefined",
+  "dataset": "unsw",
+  "scope": "sample",
+  "seed": 1,
+  "auroc": 0.9417457584198531,
+  "auprc": 0.9482925691405445,
+  "attack_prevalence_test": 0.610371209974497,
+  "threshold": 0.93,
+  "target_fpr": 0.01,
+  "recall_at_1pct_fpr": 0.7311977715877437,
+  "test_fpr_at_threshold": 0.07636363636363637,
+  "per_family_recall": {
+    "analysis": {
+      "recall": 0.15517241379310345,
+      "n": 58
+    },
+    "backdoor": {
+      "recall": 0.8070175438596491,
+      "n": 57
+    },
+    "dos": {
+      "recall": 0.7833333333333333,
+      "n": 240
+    },
+    "exploits": {
+      "recall": 0.8116591928251121,
+      "n": 446
+    },
+    "fuzzers": {
+      "recall": 0.15384615384615385,
+      "n": 351
+    },
+    "generic": {
+      "recall": 0.9308176100628931,
+      "n": 318
+    },
+    "reconnaissance": {
+      "recall": 0.8700361010830325,
+      "n": 277
+    },
+    "shellcode": {
+      "recall": 0.9285714285714286,
+      "n": 364
+    },
+    "worms": {
+      "recall": 0.9534883720930233,
+      "n": 43
+    }
+  },
+  "val_fpr_at_threshold": 0.009966777408637873,
+  "val_auroc": 0.9850399755513275,
+  "fit_seconds": 0.27,
+  "score_seconds": 0.06,
+  "leakage": {
+    "train_test_overlap_rows": 0,
+    "train_val_overlap_rows": 0,
+    "id_columns_present": [],
+    "port_columns_present": [],
+    "meta_columns_present": [],
+    "passed": true
+  },
+  "preprocessing_check": {
+    "preprocessing_rows_seen": [
+      5496
+    ],
+    "train_rows": 5496,
+    "fit_on_train_only": true
+  },
+  "model_params": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced_subsample",
+    "criterion": "gini",
+    "max_depth": 20,
+    "max_features": "sqrt",
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 100,
+    "n_jobs": 8,
+    "oob_score": false,
+    "random_state": 1,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "split_summary": {
+    "name": "predefined",
+    "dataset": "unsw",
+    "scope": "sample",
+    "seed": 1,
+    "n_features": 42,
+    "train": {
+      "n": 5496,
+      "n_attack": 3794,
+      "families": {
+        "benign": 1702,
+        "shellcode": 919,
+        "exploits": 715,
+        "fuzzers": 598,
+        "reconnaissance": 354,
+        "analysis": 333,
+        "generic": 285,
+        "backdoor": 249,
+        "dos": 243,
+        "worms": 98
+      }
+    },
+    "val": {
+      "n": 975,
+      "n_attack": 674,
+      "families": {
+        "benign": 301,
+        "shellcode": 163,
+        "exploits": 127,
+        "fuzzers": 106,
+        "reconnaissance": 63,
+        "analysis": 59,
+        "generic": 51,
+        "backdoor": 44,
+        "dos": 43,
+        "worms": 18
+      }
+    },
+    "test": {
+      "n": 3529,
+      "n_attack": 2154,
+      "families": {
+        "benign": 1375,
+        "exploits": 446,
+        "shellcode": 364,
+        "fuzzers": 351,
+        "generic": 318,
+        "reconnaissance": 277,
+        "dos": 240,
+        "analysis": 58,
+        "backdoor": 57,
+        "worms": 43
+      }
+    },
+    "val_rows_removed_overlap_with_train": 0,
+    "test_rows_removed_overlap_with_train": 0
+  }
+}
